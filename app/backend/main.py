@@ -40,18 +40,18 @@ app.add_middleware(
 class TaskCreate(BaseModel):
     title: str
 
-@app.get("/")
+@app.get("/api/")
 def read_root():
     return {"status": "Backend rodando!"}
 
-@app.get("/tasks")
+@app.get("/api/tasks")
 def get_tasks():
     db = SessionLocal()
     tasks = db.query(TaskDB).all()
     db.close()
     return tasks
 
-@app.post("/tasks")
+@app.post("/api/tasks")
 def create_task(task: TaskCreate):
     db = SessionLocal()
     db_task = TaskDB(title=task.title)
