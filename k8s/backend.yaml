@@ -14,8 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        # Troque pela imagem que você gerou no Docker Hub na etapa anterior
-        image: mauriciofnti/taskflow-frontend:latest 
+        image: mauriciofnti/taskflow-backend:latest 
         ports:
         - containerPort: 8000
         env:

@@ -14,8 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        # Troque pela imagem do Vue.js que você gerou no Docker Hub
-        image: mauriciofnti/taskflow-backend:latest
+        image: mauriciofnti/taskflow-frontend:latest
         ports:
         - containerPort: 80
 ---
