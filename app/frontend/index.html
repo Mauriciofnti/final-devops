@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App DevOps</title>
+    <!-- Importando o Vue.js via CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        input { width: 70%; padding: 10px; margin-right: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <h2>Minhas Tarefas (DevOps)</h2>
+        <form @submit.prevent="addTask">
+            <input v-model="newTask" placeholder="Digite uma nova tarefa..." required>
+            <button type="submit">Adicionar</button>
+        </form>
+        <ul style="list-style-type: none; padding: 0;">
+            <!-- Renderiza a lista de tarefas vinda do banco -->
+            <li v-for="task in tasks" :key="task.id">{{ task.title }}</li>
+        </ul>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const tasks = ref([]);
+                const newTask = ref('');
+
+                // Faz a requisição para a rota /api (que o Ingress direciona para o backend)
+                const fetchTasks = async () => {
+                    try {
+                        const res = await fetch('/api/tasks');
+                        tasks.value = await res.json();
+                    } catch (error) {
+                        console.error("Erro ao buscar tarefas:", error);
+                    }
+                };
+
+                const addTask = async () => {
+                    try {
+                        await fetch('/api/tasks', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ title: newTask.value })
+                        });
+                        newTask.value = '';
+                        fetchTasks(); // Atualiza a lista
+                    } catch (error) {
+                        console.error("Erro ao salvar tarefa:", error);
+                    }
+                };
+
+                // Busca as tarefas assim que a página carrega
+                onMounted(fetchTasks);
+
+                return { tasks, newTask, addTask };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

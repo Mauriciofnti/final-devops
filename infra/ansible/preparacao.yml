@@ -1,0 +1,25 @@
+---
+- name: Preparar maquinas para o Kubernetes
+  hosts: all
+  become: yes
+  tasks:
+    - name: Atualizar cache do APT
+      apt:
+        update_cache: yes
+
+    - name: Instalar pacotes essenciais (curl, apt-transport-https)
+      apt:
+        name:
+          - curl
+          - apt-transport-https
+          - software-properties-common
+        state: present
+
+    - name: Desabilitar Swap (Obrigatorio para Kubernetes)
+      command: swapoff -a
+
+    - name: Remover Swap do /etc/fstab para persistir apos reboot
+      replace:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        replace: '# \1'
